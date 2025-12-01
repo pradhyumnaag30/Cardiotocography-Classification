@@ -131,6 +131,7 @@ Since XGBoost clearly dominated the baseline comparison, it was selected for hyp
 Even after tuning, the macro F1 remained essentially unchanged relative to the baseline. This indicates that the baseline XGBoost model was already operating close to the performance ceiling for this tabular CTG dataset.
 
 <img src="confusionmatrixnsp.png" alt="NSP Label Distribution" width="600"/>
+
 # **PART II — NSP 3-Class Classification with Cost-Sensitive Decision Layer and Clinical Triage System**
 
 Although the tuned XGBoost model performed strongly, standard argmax prediction treats all misclassifications as equally important. In a clinical setting, this is not realistic. Misclassifying a *Pathologic* case as *Normal* is substantially more dangerous than over-predicting risk.
