@@ -13,8 +13,8 @@ Beyond standard classification, the project implements a clinically aligned deci
 
 | Problem                             | Model    | Accuracy  | Macro-F1  |
 | ----------------------------------- | -------- | --------- | --------- |
-| NSP (3-Class)                       | XGBoost  | **0.953** | **0.912** |
-| CLASS (10-Class)                    | LightGBM | **0.917** | **0.876** |
+| NSP (3-Class)                       | XGBoost  | **0.955** | **0.915** |
+| CLASS (10-Class)                    | LightGBM | **0.915** | **0.871** |
 | NSP + Cost-Sensitive Decision Layer | XGBoost  | **0.950** | **0.909** |
 | NSP + Clinical Triage System        | XGBoost  | **0.953** | **0.911** |
 
@@ -71,9 +71,9 @@ XGBoost dominated all baselines, achieving the strongest accuracy and macro-F1 w
 
 Fine-tuning XGBoost offered a marginal improvement:
 
-| Model           | Accuracy  | Macro-F1  |
-| --------------- | --------- | --------- |
-| XGBoost (tuned) | **0.955** | **0.915** |
+| Model           | Accuracy  | Precision | Recall    | Macro-F1 |
+| --------------- | --------- | --------- | --------- | ---------|
+| XGBoost (tuned) | **0.955** | **0.930** | **0.900** | **0.915**|
 
 This indicates that XGBoost already operates near the dataset’s performance ceiling.
 
@@ -125,14 +125,13 @@ else: predict Normal
 
 ### Performance
 
-* **Accuracy:** **0.953** (matches baseline)
+* **Accuracy:** **0.953** (very close to baseline)
 * **Macro-F1:** 0.911
 
 Key outcomes:
 
-* **Pathologic recall is preserved** → safer clinical behavior
 * **Borderline samples escalate upward** (Normal → Suspect, etc.)
-* Achieves **identical accuracy** while being clinically conservative
+* Achieves **nearly dentical accuracy and Macro-F1** while being clinically conservative
 
 ### Why This Matters
 
@@ -163,9 +162,9 @@ The CLASS task is substantially harder due to:
 
 ### Hyperparameter Optimization
 
-| Model            | Accuracy  | Macro-F1  |
-| ---------------- | --------- | --------- |
-| LightGBM (tuned) | **0.917** | **0.876** |
+| Model            | Accuracy  | Precision | Recall    | Macro-F1  |
+| ---------------- | --------- | --------- | --------- | --------- |
+| LightGBM (tuned) | **0.915** | **0.910** | **0.850** | **0.871** |
 
 ### Confusion Matrix
 
