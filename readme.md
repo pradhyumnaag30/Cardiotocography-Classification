@@ -107,8 +107,26 @@ Prediction becomes:
 
 ### Performance
 
-* **Accuracy:** 0.950
-* **Macro-F1:** 0.909
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Model</th>
+      <th>Accuracy</th>
+      <th>Macro F1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>Cost-Sensitive</td>
+      <td>0.950704</td>
+      <td>0.909660</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 Tradeoff:
 Slightly lower metrics but **significantly safer behavior** on borderline cases.
@@ -125,13 +143,31 @@ else: predict Normal
 
 ### Performance
 
-* **Accuracy:** **0.953** (very close to baseline)
-* **Macro-F1:** 0.911
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Model</th>
+      <th>Accuracy</th>
+      <th>Macro F1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>Triage</td>
+      <td>0.953052</td>
+      <td>0.911047</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 Key outcomes:
 
 * **Borderline samples escalate upward** (Normal → Suspect, etc.)
-* Achieves **nearly dentical accuracy and Macro-F1** while being clinically conservative
+* Achieves **nearly identical accuracy and Macro-F1** while being clinically conservative
 
 ### Why This Matters
 
@@ -160,7 +196,7 @@ The CLASS task is substantially harder due to:
 | kNN                 | 0.707     | 0.597     |
 | Naive Bayes         | 0.615     | 0.585     |
 
-### Hyperparameter Optimization
+### **Hyperparameter Optimization (Optuna)**
 
 | Model            | Accuracy  | Precision | Recall    | Macro-F1  |
 | ---------------- | --------- | --------- | --------- | --------- |
