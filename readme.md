@@ -11,12 +11,12 @@ Beyond standard classification, the project implements a clinically aligned deci
 
 # ⭐ **Results Summary**
 
-| Problem                             | Model    | Accuracy  | Macro-F1  |
-| ----------------------------------- | -------- | --------- | --------- |
-| NSP (3-Class)                       | XGBoost  | **0.955** | **0.915** |
-| CLASS (10-Class)                    | LightGBM | **0.915** | **0.871** |
-| NSP + Cost-Sensitive Decision Layer | XGBoost  | **0.950** | **0.909** |
-| NSP + Clinical Triage System        | XGBoost  | **0.953** | **0.911** |
+| Problem                             | Model    | Accuracy  | Precision | Recall    | Macro-F1 |
+| ----------------------------------- | -------- | --------- | --------- | --------- | ---------|
+| NSP (3-Class)                       | XGBoost  | **0.955** | **0.933** | **0.899** | **0.915**|
+| CLASS (10-Class)                    | LightGBM | **0.915** | **0.910** | **0.850** | **0.871**|
+| NSP + Cost-Sensitive Decision Layer | XGBoost  | **0.950** | **0.907** | **0.911** | **0.909**|
+| NSP + Clinical Triage System        | XGBoost  | **0.953** | **0.920** | **0.903** | **0.911**|
 
 The NSP classifier achieves **high stability on the Suspect and Pathologic classes**, which are the most clinically critical categories.
 
