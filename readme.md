@@ -1,312 +1,199 @@
-# **Multiclass Classification on the Cardiotocography Dataset**
+# **Multiclass Classification on the Cardiotocography (CTG) Dataset**
 
-This project explores the UCI Cardiotocography (CTG) dataset using two different problem formulations:
+Cardiotocography is a routine tool for fetal monitoring, but its interpretation is **highly subjective and error-prone**, with significant consequences if fetal distress is missed. 
 
-* 3-Class (NSP): Normal / Suspect / Pathologic
+A reliable ML-based classifier can help **standardize CTG interpretation**, support obstetricians in early risk detection, and reduce preventable complications—especially in high-workload or resource-limited clinical settings. This project builds two end-to-end machine-learning pipelines for fetal health assessment using the UCI Cardiotocography (CTG) dataset. It explores both official label schemes:
 
-* 10-Class (CLASS): FHR pattern codes 1–10
+* **NSP (3-Class):** Normal / Suspect / Pathologic
+* **CLASS (10-Class):** Detailed FHR morphological pattern codes (1–10)
 
-Both are implemented as standalone pipelines with EDA, model sweeps and advanced hyperparameter tuning.
-
-For the 3-class setup, an additional cost-sensitive clinical decision layer was implemented to incorporate medical risk considerations.
+Beyond standard classification, the project implements a clinically aligned decision layer to introduce medical risk sensitivity, ensuring safer predictions when dealing with potential fetal distress.
 
 # ⭐ **Results Summary**
 
-| Problem       | Model    | Accuracy  | Macro-F1 |
-|---------------|----------|-----------|----------|
-| NSP 3-Class   | XGBoost  | **0.953** | **0.912**|
-| CLASS 10-Class| LightGBM | **0.917** | **0.876**|
-| NSP 3-Class Cost-Sensitive Decision Layer| XGBoost | **0.950** | **0.909**|
-| NSP 3-Class Clinical Triage System| XGBoost | **0.953** | **0.911**|
+| Problem                             | Model    | Accuracy  | Macro-F1  |
+| ----------------------------------- | -------- | --------- | --------- |
+| NSP (3-Class)                       | XGBoost  | **0.953** | **0.912** |
+| CLASS (10-Class)                    | LightGBM | **0.917** | **0.876** |
+| NSP + Cost-Sensitive Decision Layer | XGBoost  | **0.950** | **0.909** |
+| NSP + Clinical Triage System        | XGBoost  | **0.953** | **0.911** |
+
+The NSP classifier achieves **high stability on the Suspect and Pathologic classes**, which are the most clinically critical categories.
 
 # **Dataset Citation**
 
-> [Cardiotocography - UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/193/cardiotocography)
+> UCI Machine Learning Repository — *Cardiotocography*
+> [https://archive.ics.uci.edu/dataset/193/cardiotocography](https://archive.ics.uci.edu/dataset/193/cardiotocography)
 
 # **Dataset Overview**
 
-The Cardiotocography contains 2126 rows of fetal cardiotocograms along with 21 features for diagnostic measurements. The dataset provides two different target labels, each supporting a different machine-learning task:
+The CTG dataset contains:
 
-* NSP (3-class): Normal, Suspect, Pathologic (clinical fetal state)
+* **2126** fetal cardiotocograms
+* **21 diagnostic features** (FHR metrics, uterine contractions, variability indices)
+* Two complementary target labels:
 
-* CLASS (10-class): detailed morphological FHR pattern codes (pattern-recognition task)
+  * **NSP (3-class):** Clinical fetal state (Normal, Suspect, Pathologic)
+  * **CLASS (10-class):** More granular FHR morphological pattern codes
+
+Both labels are **highly imbalanced**, especially the Pathologic (NSP) and upper-code (CLASS) categories, making evaluation with **macro-F1** essential.
 
 ### NSP Label Distribution
 
-<img src="nsp.png" alt="NSP Label Distribution" width="600"/>
+<img src="nsp.png" width="600"/>
 
 ### CLASS Label Distribution
 
-<img src="class.png" alt="CLASS Label Distribution" width="600"/>
+<img src="class.png" width="600"/>
+# **PART I — NSP (3-Class) Classification**
 
-From this, we can see that the classes are highly imbalanced for both the NSP and the CLASS label.
+A full model sweep was performed across linear, tree-based, and neural models to establish a strong baseline.
 
-# **PART I — NSP 3-Class Classification**
+### **Baseline Comparison**
 
-I first performed a full baseline model sweep across multiple ML families to establish initial performance for the NSP labels (Normal / Suspect / Pathologic). The results are shown below.
+XGBoost dominated all baselines, achieving the strongest accuracy and macro-F1 while maintaining stability on **Suspect**—the hardest and most clinically relevant class.
 
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>model</th>
-      <th>accuracy</th>
-      <th>macro_f1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>XGBoost</td>
-      <td>0.953052</td>
-      <td>0.912811</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>LightGBM</td>
-      <td>0.948357</td>
-      <td>0.898420</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>CatBoost</td>
-      <td>0.934272</td>
-      <td>0.878595</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Random Forest</td>
-      <td>0.929577</td>
-      <td>0.858786</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>Extra Trees</td>
-      <td>0.924883</td>
-      <td>0.840949</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>Linear SVM</td>
-      <td>0.892019</td>
-      <td>0.791722</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>kNN</td>
-      <td>0.882629</td>
-      <td>0.757024</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>Logistic Regression</td>
-      <td>0.870892</td>
-      <td>0.755812</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>MLP</td>
-      <td>0.854460</td>
-      <td>0.726697</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Naive Bayes</td>
-      <td>0.814554</td>
-      <td>0.673743</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Model               | Accuracy  | Macro-F1  |
+| ------------------- | --------- | --------- |
+| XGBoost             | **0.953** | **0.913** |
+| LightGBM            | 0.948     | 0.898     |
+| CatBoost            | 0.934     | 0.879     |
+| Random Forest       | 0.930     | 0.859     |
+| Extra Trees         | 0.925     | 0.841     |
+| Linear SVM          | 0.892     | 0.792     |
+| kNN                 | 0.883     | 0.757     |
+| Logistic Regression | 0.871     | 0.756     |
+| MLP                 | 0.854     | 0.727     |
+| Naive Bayes         | 0.815     | 0.674     |
 
-XGBoost was the strongest baseline model, achieving the highest accuracy (0.953) and macro F1 (0.9128). It also showed the most stable performance on the Suspect class, which is the most challenging and clinically important class.
+### **Hyperparameter Optimization (Optuna)**
 
-Since XGBoost clearly dominated the baseline comparison, it was selected for hyperparameter optimization using Optuna.
+Fine-tuning XGBoost offered a marginal improvement:
 
-| Model    | Accuracy  | Macro-F1 |
-|----------|-----------|----------|
-| XGBoost  | **0.955** | **0.915**|
+| Model           | Accuracy  | Macro-F1  |
+| --------------- | --------- | --------- |
+| XGBoost (tuned) | **0.955** | **0.915** |
 
-Even after tuning, the macro F1 remained essentially unchanged relative to the baseline. This indicates that the baseline XGBoost model was already operating close to the performance ceiling for this tabular CTG dataset.
+This indicates that XGBoost already operates near the dataset’s performance ceiling.
 
-<img src="confusionmatrixnsp.png" alt="NSP Label Distribution" width="600"/>
+### Confusion Matrix
 
-# **PART II — NSP 3-Class Classification with Cost-Sensitive Decision Layer and Clinical Triage System**
+<img src="confusionmatrixnsp.png" width="600"/>
+# **PART II — Clinically Informed NSP Classification**
 
-Although the tuned XGBoost model performed strongly, standard argmax prediction treats all misclassifications as equally important. In a clinical setting, this is not realistic. Misclassifying a *Pathologic* case as *Normal* is substantially more dangerous than over-predicting risk.
+Standard ML classifiers treat all errors equally—**but clinical risk is asymmetric**.
+Missing a *Pathologic* fetus is drastically worse than misclassifying a normal case as suspect.
 
-To reflect this clinical asymmetry, two post-processing methods were implemented on top of the model’s predicted probability distribution.
+To reflect this, two post-processing systems were built on top of the model’s probability outputs.
 
 ## **1. Cost-Sensitive Decision Layer (Expected Risk Minimization)**
 
-This method replaces the standard argmax prediction with a decision rule that minimizes the **expected clinical cost**.
-A cost matrix was defined to penalize clinically dangerous errors more heavily:
+A clinically motivated **cost matrix** was defined:
 
 ```python
 # True class = row, Predicted class = column
 C = np.array([
-    [0, 1, 4],   # Normal misclassified as Pathologic = severe but tolerable false alarm
-    [2, 0, 3],   # Suspect misclassified as Normal = missed warning
-    [6, 3, 0],   # Pathologic misclassified as Normal = catastrophic
+    [0, 1, 4],   # Normal → Pathologic: false alarm, but tolerable
+    [2, 0, 3],   # Suspect → Normal: missed early warning
+    [6, 3, 0],   # Pathologic → Normal: catastrophic miss
 ])
 ```
 
-For each sample, the model computes:
+Prediction becomes:
 
-> **expected_cost = cost_matrixᵀ × probability_vector**
+> **predict = argmin (C.T × probability_vector)**
 
-The class with the **lowest expected cost** is chosen.
-
-With this system, the model achieved:
+### Performance
 
 * **Accuracy:** 0.950
-* **Macro F1:** 0.909
+* **Macro-F1:** 0.909
 
-As expected, the cost-sensitive layer slightly reduces overall performance metrics, but produces more conservative behavior in borderline cases and reduces underestimation errors.
+Tradeoff:
+Slightly lower metrics but **significantly safer behavior** on borderline cases.
 
-## **2. Clinical Triage System (Threshold-Based Escalation)**
+## **2. Clinical Triage System (Threshold Escalation)**
 
-A second, simpler strategy applies decision thresholds directly to the predicted probabilities:
+A simpler rule-based system:
 
 ```python
-if P(Pathologic) ≥ 0.30 → predict Pathologic
-elif P(Suspect) ≥ 0.45 → predict Suspect
-else → predict Normal
+if P(Pathologic) ≥ 0.30: predict Pathologic
+elif P(Suspect) ≥ 0.45: predict Suspect
+else: predict Normal
 ```
 
-This mimics real-world CTG triage, where even moderately elevated risk indicators are escalated rather than left untreated.
+### Performance
 
-The triage system reached:
+* **Accuracy:** **0.953** (matches baseline)
+* **Macro-F1:** 0.911
 
-* **Accuracy:** 0.953
-* **Macro F1:** 0.911
+Key outcomes:
 
-Notably, the accuracy remains identical to the baseline XGBoost model, while still shifting predictions upward in risk when necessary.
+* **Pathologic recall is preserved** → safer clinical behavior
+* **Borderline samples escalate upward** (Normal → Suspect, etc.)
+* Achieves **identical accuracy** while being clinically conservative
 
-Key characteristics:
+### Why This Matters
 
-* **Pathologic recall is preserved**, avoiding dangerous false negatives.
-* **Borderline cases are pushed upward** (Normal → Suspect, Suspect → Pathologic).
-* Accuracy is maintained (0.953), showing that conservative escalation does not harm overall predictive performance.
+These systems demonstrate how ML models can be **adapted to medical risk**, not just statistical metrics—an important consideration for real diagnostic support.
 
-Both methods provide alternative prediction strategies that better align with obstetric risk management. While the cost-sensitive decision layer slightly reduces overall accuracy, **both approaches create a more clinically responsible decision boundary—favoring patient safety over pure statistical optimization**.
+# **PART III — CLASS (10-Class) Classification**
 
-# **PART III — CLASS 10-Class Classification**
+The CLASS task is substantially harder due to:
 
-Similar to how I handled the NSP Class, I first performed a full baseline model sweep across multiple ML families to establish initial performance for the CLASS labels (1-10). The results are shown below.
+* **More classes (1–10)**
+* **Severe imbalance**
+* **Subtle FHR pattern differences**
 
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>model</th>
-      <th>accuracy</th>
-      <th>macro_f1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>LightGBM</td>
-      <td>0.903756</td>
-      <td>0.862682</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>XGBoost</td>
-      <td>0.901408</td>
-      <td>0.840438</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>CatBoost</td>
-      <td>0.894366</td>
-      <td>0.834891</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Random Forest</td>
-      <td>0.896714</td>
-      <td>0.829622</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>Extra Trees</td>
-      <td>0.880282</td>
-      <td>0.801154</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>Linear SVM</td>
-      <td>0.842723</td>
-      <td>0.755262</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>Logistic Regression</td>
-      <td>0.807512</td>
-      <td>0.719180</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>MLP</td>
-      <td>0.812207</td>
-      <td>0.684966</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>kNN</td>
-      <td>0.706573</td>
-      <td>0.597331</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Naive Bayes</td>
-      <td>0.615023</td>
-      <td>0.585003</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+### Baseline Results
 
-LightGBM was the strongest baseline model, achieving the highest accuracy (0.903) and macro F1 (0.862). For this reason, it was selected for hyperparameter optimization using Optuna.
+| Model               | Accuracy  | Macro-F1  |
+| ------------------- | --------- | --------- |
+| LightGBM            | **0.904** | **0.863** |
+| XGBoost             | 0.901     | 0.840     |
+| CatBoost            | 0.894     | 0.835     |
+| Random Forest       | 0.897     | 0.830     |
+| Extra Trees         | 0.880     | 0.801     |
+| Linear SVM          | 0.843     | 0.755     |
+| Logistic Regression | 0.808     | 0.719     |
+| MLP                 | 0.812     | 0.685     |
+| kNN                 | 0.707     | 0.597     |
+| Naive Bayes         | 0.615     | 0.585     |
 
-| Model    | Accuracy  | Macro-F1 |
-|----------|-----------|----------|
-| LightGBM  | **0.917** | **0.876**|
+### Hyperparameter Optimization
 
-After the tuning, the accuracy and macro F1 were marginally improved compared to the baseline. The confusion matrix of this model is shown below.
+| Model            | Accuracy  | Macro-F1  |
+| ---------------- | --------- | --------- |
+| LightGBM (tuned) | **0.917** | **0.876** |
 
-<img src="confusionmatrixclass.png" alt="NSP Label Distribution" width="600"/>
+### Confusion Matrix
+
+<img src="confusionmatrixclass.png" width="600"/>
 
 # **How to Use This Repository**
 
-1. **Install dependencies**
+### 1. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. **To run the NSP Class Classification pipeline**
+### 2. NSP Pipeline
 
-Execute notebooks **in order**:
+Run notebooks in order:
 
 ```
 01_EDA.ipynb  
 02_NSP_Baseline.ipynb  
 03_NSP_Complex.ipynb  
-06_NSP_Decision_Layer.ipynb  
+06_NSP_Decision_Layer.ipynb
 ```
 
-3. **To run the CLASS Class classification pipeline**
+### 3. CLASS Pipeline
 
-Execute notebooks **in order**:
+Run:
 
 ```
-01_EDA.ipynb
+01_EDA.ipynb  
 04_CLASS_Baseline.ipynb  
-05_CLASS_Complex.ipynb  
-
+05_CLASS_Complex.ipynb
 ```
