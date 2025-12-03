@@ -45,6 +45,7 @@ Both labels are **highly imbalanced**, especially the Pathologic (NSP) and upper
 ### CLASS Label Distribution
 
 <img src="class.png" width="600"/>
+
 # **PART I — NSP (3-Class) Classification**
 
 A full model sweep was performed across linear, tree-based, and neural models to establish a strong baseline.
@@ -79,6 +80,7 @@ This indicates that XGBoost already operates near the dataset’s performance ce
 ### Confusion Matrix
 
 <img src="confusionmatrixnsp.png" width="600"/>
+
 # **PART II — Clinically Informed NSP Classification**
 
 Standard ML classifiers treat all errors equally—**but clinical risk is asymmetric**.
