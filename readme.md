@@ -73,7 +73,7 @@ Fine-tuning XGBoost offered a marginal improvement:
 
 | Model           | Accuracy  | Precision | Recall    | Macro-F1 |
 | --------------- | --------- | --------- | --------- | ---------|
-| XGBoost (tuned) | **0.955** | **0.930** | **0.900** | **0.915**|
+| XGBoost (tuned) | **0.955** | **0.933** | **0.899** | **0.915**|
 
 This indicates that XGBoost already operates near the dataset’s performance ceiling.
 
@@ -107,26 +107,9 @@ Prediction becomes:
 
 ### Performance
 
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Model</th>
-      <th>Accuracy</th>
-      <th>Macro F1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>Cost-Sensitive</td>
-      <td>0.950704</td>
-      <td>0.909660</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Model           | Accuracy  | Precision | Recall    | Macro-F1 |
+| --------------- | --------- | --------- | --------- | ---------|
+| XGBoost (tuned) | **0.950** | **0.907** | **0.911** | **0.909**|
 
 Tradeoff:
 Slightly lower metrics but **significantly safer behavior** on borderline cases.
@@ -143,26 +126,9 @@ else: predict Normal
 
 ### Performance
 
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Model</th>
-      <th>Accuracy</th>
-      <th>Macro F1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>Triage</td>
-      <td>0.953052</td>
-      <td>0.911047</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Model           | Accuracy  | Precision | Recall    | Macro-F1 |
+| --------------- | --------- | --------- | --------- | ---------|
+| XGBoost (tuned) | **0.953** | **0.920** | **0.903** | **0.911**|
 
 Key outcomes:
 
