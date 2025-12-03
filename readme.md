@@ -86,7 +86,7 @@ This indicates that XGBoost already operates near the dataset’s performance ce
 Standard ML classifiers treat all errors equally—**but clinical risk is asymmetric**.
 Missing a *Pathologic* fetus is drastically worse than misclassifying a normal case as suspect.
 
-To reflect this, two post-processing systems were built on top of the model’s probability outputs.
+To reflect this, two post-processing systems were built on top of the XGBoost model’s probability outputs.
 
 ## **1. Cost-Sensitive Decision Layer (Expected Risk Minimization)**
 
